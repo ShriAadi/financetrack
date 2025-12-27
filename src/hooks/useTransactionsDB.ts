@@ -172,26 +172,27 @@ export const useTransactionsDB = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('transactions')
-        .update({ 
-          is_deleted: true, 
-          deleted_at: new Date().toISOString() 
-        })
-        .eq('id', id);
+      const { error } = await supabase.rpc('soft_delete_transaction', {
+        transaction_id: id,
+      });
 
       if (error) throw error;
 
       // Move to trash locally
-      const transaction = transactions.find(t => t.id === id);
+      const transaction = transactions.find((t) => t.id === id);
       if (transaction) {
-        const trashedTransaction = { 
-          ...transaction, 
-          isDeleted: true, 
-          deletedAt: new Date() 
+        const now = new Date();
+        const trashedTransaction = {
+          ...transaction,
+          isDeleted: true,
+          deletedAt: now,
+          updatedAt: now,
         };
-        setTransactions(prev => prev.filter(t => t.id !== id));
-        setTrashedTransactions(prev => [trashedTransaction, ...prev]);
+        setTransactions((prev) => prev.filter((t) => t.id !== id));
+        setTrashedTransactions((prev) => [trashedTransaction, ...prev]);
+      } else {
+        // Fallback to ensure UI reflects DB state
+        await fetchTransactions();
       }
 
       toast({
@@ -205,7 +206,7 @@ export const useTransactionsDB = () => {
         variant: 'destructive',
       });
     }
-  }, [user, transactions, toast]);
+  }, [user, transactions, toast, fetchTransactions]);
 
   const getStats = useCallback(() => {
     const totalIncome = transactions
