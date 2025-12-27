@@ -1,19 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { SummaryCards } from '@/components/SummaryCards';
 import { TransactionForm } from '@/components/TransactionForm';
 import { TransactionList } from '@/components/TransactionList';
-import { useTransactionsDB, TransactionFormData } from '@/hooks/useTransactionsDB';
+import { useTransactionsUnified, TransactionFormData } from '@/hooks/useTransactionsUnified';
+import { MergePrompt } from '@/components/MergePrompt';
 import { Toaster } from '@/components/ui/toaster';
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
-  const { transactions, softDeleteTransaction, addTransaction, getStats, isLoading } = useTransactionsDB();
+  const [showMergePrompt, setShowMergePrompt] = useState(false);
+  const { 
+    transactions, 
+    softDeleteTransaction, 
+    addTransaction, 
+    getStats, 
+    isLoading,
+    isSignedIn,
+    mergeGuestDataToCloud,
+    getUnsyncedCount,
+  } = useTransactionsUnified();
   const stats = getStats();
+
+  // Check if we need to show merge prompt after sign in
+  useEffect(() => {
+    if (isSignedIn) {
+      getUnsyncedCount().then(count => {
+        if (count > 0) {
+          setShowMergePrompt(true);
+        }
+      });
+    }
+  }, [isSignedIn, getUnsyncedCount]);
 
   const handleAddTransaction = async (data: TransactionFormData) => {
     await addTransaction(data);
     setShowForm(false);
+  };
+
+  const handleMerge = async () => {
+    const success = await mergeGuestDataToCloud();
+    if (success) {
+      setShowMergePrompt(false);
+    }
   };
 
   if (isLoading) {
@@ -36,6 +65,14 @@ const Index = () => {
       />
 
       <main className="container py-6 md:py-8 space-y-6 md:space-y-8">
+        {/* Merge Prompt */}
+        {showMergePrompt && (
+          <MergePrompt
+            onMerge={handleMerge}
+            onDismiss={() => setShowMergePrompt(false)}
+          />
+        )}
+
         {/* Summary Cards */}
         <section>
           <SummaryCards

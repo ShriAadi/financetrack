@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Wallet2, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Wallet2, Mail, Lock, AlertCircle, ArrowRight, Cloud } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import { getUnsyncedTransactions } from '@/lib/indexedDB';
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: 'Please enter a valid email address' }),
@@ -19,6 +20,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [unsyncedCount, setUnsyncedCount] = useState(0);
   const { signIn, signUp, user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -28,6 +30,10 @@ const Auth = () => {
       navigate('/');
     }
   }, [user, isLoading, navigate]);
+
+  useEffect(() => {
+    getUnsyncedTransactions().then(unsynced => setUnsyncedCount(unsynced.length));
+  }, []);
 
   const validateForm = () => {
     try {
@@ -128,9 +134,21 @@ const Auth = () => {
             </div>
             <h1 className="text-2xl font-bold text-foreground">FinanceTrack</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              {isLogin ? 'Sign in to your account' : 'Create a new account'}
+              {isLogin ? 'Sign in to backup your data' : 'Create account for cloud backup'}
             </p>
           </div>
+
+          {/* Data sync notice */}
+          {unsyncedCount > 0 && (
+            <div className="mb-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
+              <div className="flex items-center gap-2 text-sm">
+                <Cloud className="w-4 h-4 text-primary" />
+                <span className="text-foreground">
+                  {unsyncedCount} transaction{unsyncedCount !== 1 ? 's' : ''} ready to backup
+                </span>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
@@ -185,7 +203,7 @@ const Auth = () => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-4">
             <p className="text-sm text-muted-foreground">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}
               <button
@@ -199,6 +217,26 @@ const Auth = () => {
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
+            </p>
+
+            {/* Continue as guest */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">or</span>
+              </div>
+            </div>
+
+            <Link to="/">
+              <Button variant="ghost" className="w-full gap-2">
+                Continue without account
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <p className="text-xs text-muted-foreground">
+              Your data stays on this device. Sign in later to backup.
             </p>
           </div>
         </div>
