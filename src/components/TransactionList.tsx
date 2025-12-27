@@ -1,4 +1,4 @@
-import { Transaction } from '@/types/transaction';
+import { Transaction } from '@/hooks/useTransactionsDB';
 import { TransactionRow } from './TransactionRow';
 import { Receipt } from 'lucide-react';
 

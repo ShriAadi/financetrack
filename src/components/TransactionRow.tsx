@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ArrowDownLeft, ArrowUpRight, Paperclip, Trash2, ExternalLink } from 'lucide-react';
-import { Transaction } from '@/types/transaction';
+import { Transaction } from '@/hooks/useTransactionsDB';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -88,14 +88,15 @@ export const TransactionRow = ({ transaction, onDelete }: TransactionRowProps) =
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 text-xs text-destructive hover:text-destructive">
                   <Trash2 className="w-3 h-3 mr-1" />
-                  Delete
+                  Move to Trash
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+                  <AlertDialogTitle>Move to Trash</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete this transaction? This action cannot be undone.
+                    This transaction will be moved to trash for record keeping. 
+                    Trashed items cannot be permanently deleted or edited.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -104,7 +105,7 @@ export const TransactionRow = ({ transaction, onDelete }: TransactionRowProps) =
                     onClick={() => onDelete(transaction.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete
+                    Move to Trash
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
