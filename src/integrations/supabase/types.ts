@@ -14,13 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      transactions: {
+        Row: {
+          amount: number
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          created_at: string
+          date: string
+          deleted_at: string | null
+          id: string
+          is_deleted: boolean
+          notes: string | null
+          person_name: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          created_at?: string
+          date?: string
+          deleted_at?: string | null
+          id?: string
+          is_deleted?: boolean
+          notes?: string | null
+          person_name: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          created_at?: string
+          date?: string
+          deleted_at?: string | null
+          id?: string
+          is_deleted?: boolean
+          notes?: string | null
+          person_name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      soft_delete_transaction: {
+        Args: { transaction_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

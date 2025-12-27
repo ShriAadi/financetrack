@@ -7,9 +7,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { TransactionFormData, TransactionType } from '@/types/transaction';
+import { TransactionFormData } from '@/hooks/useTransactionsDB';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+
+type TransactionType = 'received' | 'sent';
 
 interface TransactionFormProps {
   onSubmit: (data: TransactionFormData) => void;
@@ -63,11 +65,6 @@ export const TransactionForm = ({ onSubmit, onCancel }: TransactionFormProps) =>
     setType('received');
     setNotes('');
     setAttachment(null);
-
-    toast({
-      title: "Transaction added",
-      description: `${type === 'received' ? 'Income' : 'Expense'} of $${parseFloat(amount).toFixed(2)} recorded`,
-    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

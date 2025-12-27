@@ -3,16 +3,16 @@ import { Header } from '@/components/Header';
 import { SummaryCards } from '@/components/SummaryCards';
 import { TransactionForm } from '@/components/TransactionForm';
 import { TransactionList } from '@/components/TransactionList';
-import { useTransactions } from '@/hooks/useTransactions';
+import { useTransactionsDB, TransactionFormData } from '@/hooks/useTransactionsDB';
 import { Toaster } from '@/components/ui/toaster';
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
-  const { transactions, addTransaction, deleteTransaction, getStats, isLoading } = useTransactions();
+  const { transactions, softDeleteTransaction, addTransaction, getStats, isLoading } = useTransactionsDB();
   const stats = getStats();
 
-  const handleAddTransaction = (data: Parameters<typeof addTransaction>[0]) => {
-    addTransaction(data);
+  const handleAddTransaction = async (data: TransactionFormData) => {
+    await addTransaction(data);
     setShowForm(false);
   };
 
@@ -29,7 +29,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onAddClick={() => setShowForm(!showForm)} showForm={showForm} />
+      <Header 
+        onAddClick={() => setShowForm(!showForm)} 
+        showForm={showForm} 
+        trashedCount={stats.trashedCount}
+      />
 
       <main className="container py-6 md:py-8 space-y-6 md:space-y-8">
         {/* Summary Cards */}
@@ -60,7 +64,7 @@ const Index = () => {
           </div>
           <TransactionList
             transactions={transactions}
-            onDelete={deleteTransaction}
+            onDelete={softDeleteTransaction}
           />
         </section>
       </main>
