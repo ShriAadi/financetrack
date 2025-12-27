@@ -1,12 +1,71 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { Header } from '@/components/Header';
+import { SummaryCards } from '@/components/SummaryCards';
+import { TransactionForm } from '@/components/TransactionForm';
+import { TransactionList } from '@/components/TransactionList';
+import { useTransactions } from '@/hooks/useTransactions';
+import { Toaster } from '@/components/ui/toaster';
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+  const [showForm, setShowForm] = useState(false);
+  const { transactions, addTransaction, deleteTransaction, getStats, isLoading } = useTransactions();
+  const stats = getStats();
+
+  const handleAddTransaction = (data: Parameters<typeof addTransaction>[0]) => {
+    addTransaction(data);
+    setShowForm(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-xl gradient-income animate-pulse mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header onAddClick={() => setShowForm(!showForm)} showForm={showForm} />
+
+      <main className="container py-6 md:py-8 space-y-6 md:space-y-8">
+        {/* Summary Cards */}
+        <section>
+          <SummaryCards
+            totalIncome={stats.totalIncome}
+            totalExpense={stats.totalExpense}
+            balance={stats.balance}
+            transactionCount={stats.transactionCount}
+          />
+        </section>
+
+        {/* Add Transaction Form */}
+        {showForm && (
+          <section>
+            <TransactionForm
+              onSubmit={handleAddTransaction}
+              onCancel={() => setShowForm(false)}
+            />
+          </section>
+        )}
+
+        {/* Transactions List */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Recent Transactions</h2>
+            <span className="text-sm text-muted-foreground">{transactions.length} total</span>
+          </div>
+          <TransactionList
+            transactions={transactions}
+            onDelete={deleteTransaction}
+          />
+        </section>
+      </main>
+
+      <Toaster />
     </div>
   );
 };
