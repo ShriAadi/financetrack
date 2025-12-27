@@ -2,11 +2,11 @@ import { Trash2, ArrowLeft, ShieldAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { TrashList } from '@/components/TrashList';
-import { useTransactionsDB } from '@/hooks/useTransactionsDB';
+import { useTransactionsUnified } from '@/hooks/useTransactionsUnified';
 import { Toaster } from '@/components/ui/toaster';
 
 const TrashPage = () => {
-  const { trashedTransactions, isLoading, getStats } = useTransactionsDB();
+  const { trashedTransactions, isLoading, getStats } = useTransactionsUnified();
   const stats = getStats();
 
   if (isLoading) {

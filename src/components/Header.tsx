@@ -1,4 +1,4 @@
-import { Wallet2, Plus, Trash2, LogOut } from 'lucide-react';
+import { Wallet2, Plus, Trash2, LogOut, User, Cloud, CloudOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,8 +22,18 @@ export const Header = ({ onAddClick, showForm, trashedCount = 0 }: HeaderProps) 
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">FinanceTrack</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                {user?.email}
+              <p className="text-xs text-muted-foreground hidden sm:flex items-center gap-1">
+                {user ? (
+                  <>
+                    <Cloud className="w-3 h-3" />
+                    {user.email}
+                  </>
+                ) : (
+                  <>
+                    <CloudOff className="w-3 h-3" />
+                    Guest Mode (Local Only)
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -41,10 +51,18 @@ export const Header = ({ onAddClick, showForm, trashedCount = 0 }: HeaderProps) 
               </Button>
             </Link>
 
-            {/* Sign Out */}
-            <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
-              <LogOut className="w-5 h-5" />
-            </Button>
+            {/* Auth Button */}
+            {user ? (
+              <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
+                <LogOut className="w-5 h-5" />
+              </Button>
+            ) : (
+              <Link to="/auth">
+                <Button variant="ghost" size="icon" title="Sign in to backup">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+            )}
 
             {/* Add Button */}
             <Button
