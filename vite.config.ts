@@ -6,7 +6,10 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/financetrack/', // GitHub Pages repo name
+  base: '/financetrack/',
+  server: {
+    port: 8080,
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
@@ -21,20 +24,21 @@ export default defineConfig(({ mode }) => ({
         background_color: "#0a0a0b",
         display: "standalone",
         orientation: "portrait",
-        start_url: "/",
+        start_url: "/financetrack/",
+        scope: "/financetrack/",
         icons: [
           {
-            src: "/pwa-192x192.png",
+            src: "/financetrack/pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/pwa-512x512.png",
+            src: "/financetrack/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "/pwa-512x512.png",
+            src: "/financetrack/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
