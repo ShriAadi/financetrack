@@ -6,7 +6,8 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/financetrack/',
+  // Use relative base so the app works on GitHub Pages even if the repo name changes.
+  base: "./",
   server: {
     port: 8080,
   },
@@ -24,21 +25,21 @@ export default defineConfig(({ mode }) => ({
         background_color: "#0a0a0b",
         display: "standalone",
         orientation: "portrait",
-        start_url: "/financetrack/",
-        scope: "/financetrack/",
+        start_url: "./",
+        scope: "./",
         icons: [
           {
-            src: "/financetrack/pwa-192x192.png",
+            src: "pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/financetrack/pwa-512x512.png",
+            src: "pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "/financetrack/pwa-512x512.png",
+            src: "pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
